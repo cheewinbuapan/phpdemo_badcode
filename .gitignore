@@ -21,6 +21,11 @@ error_log
 vendor/
 composer.lock
 
+# Node.js
+node_modules/
+package-lock.json
+npm-debug.log*
+
 # Database
 *.sql.backup
 dump.sql

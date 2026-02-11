@@ -59,6 +59,7 @@ phpdemo_badcode/
 
 - Docker
 - Docker Compose
+- Node.js (v14+) - for development tools
 
 ### Installation & Running
 
@@ -82,6 +83,41 @@ phpdemo_badcode/
    ```bash
    curl -X POST http://localhost:8080/seed.php
    ```
+
+## 🔧 Development Setup
+
+### Git Pre-commit Hooks
+
+This project uses [Husky](https://typicode.github.io/husky/) to enforce PHP syntax checks before committing.
+
+1. **Install development dependencies**
+   ```bash
+   npm install
+   ```
+
+2. **Install Git hooks**
+   ```bash
+   npx husky install
+   ```
+
+3. **Create pre-commit hook**
+   ```bash
+   npx husky add .husky/pre-commit "npx lint-staged"
+   ```
+
+### What Gets Checked
+
+- **PHP Syntax**: All staged `.php` files are validated with `php -l`
+- **Purpose**: Prevents committing code with parse errors that would break the application
+
+**Note**: These checks only validate syntax, not code quality or security. The bad code patterns in this project are intentional for educational purposes.
+
+### Bypassing Hooks (Not Recommended)
+
+If you need to commit without running checks:
+```bash
+git commit --no-verify -m "your message"
+```
 
 ## 📋 API Endpoints
 
