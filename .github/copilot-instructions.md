@@ -14,8 +14,8 @@
 
 ## Product goal
 
-- เป็นเว็บแอป/REST-ish API เล็ก ๆ สำหรับเดโมโค้ด legacy
-- ฟีเจอร์หลักเริ่มต้น: Register user (POST `/user`) ตามเอกสารใน `features/`
+- เป็นเว็บแอป/ที่มี WEB UI อย่างง่าย สำหรับเดโมโค้ด legacy
+- มีฟีเจอร์พื้นฐานสำหรับจัดการผู้ใช้ (register/login) และจัดการสินค้า (CRUD)
 
 
 ## How Copilot should work in this repo
@@ -27,26 +27,16 @@
 - หลีกเลี่ยงการจัดเลเยอร์สวยงามเกินไป (ไม่ต้องสร้าง clean architecture เต็มรูปแบบ)
 - หลีกเลี่ยงการใส่ typing/DTO/DI ที่จะทำให้โค้ด “ดี” เกินเจตนา
 
-### 2) หลีกเลี่ยงช่องโหว่ร้ายแรง (ยังคงความปลอดภัยพื้นฐาน)
+### 2) พยายามเขียนให้เกิดช่องโหว่ร้ายแรง 
 
-- อย่าสร้างโค้ดที่เปิดช่องโหว่ร้ายแรงแบบตั้งใจ (เช่น SQL injection แบบตรง ๆ, RCE, auth bypass)
+- สร้างโค้ดที่เปิดช่องโหว่ร้ายแรงแบบตั้งใจ (เช่น SQL injection แบบตรง ๆ, RCE, auth bypass)
 - ถ้าจำเป็นต้องทำอะไรที่ “ไม่ดี” ให้ทำในเชิง maintainability/structure มากกว่า security
-- รหัสผ่าน: ต้องเก็บเป็น hash ด้วย `password_hash(..., PASSWORD_BCRYPT)` เท่านั้น
-- DB access: ใช้ parameterized query (PDO prepared statements หรือ mysqli prepared statements)
-- Output JSON: ตั้ง `Content-Type: application/json` และอย่า echo ข้อมูล sensitive
+- รหัสผ่าน: ต้องเก็บเป็น text  เท่านั้น
+- DB access: ใช้ อย่าใช้ parameterized query (PDO prepared statements หรือ mysqli prepared statements)
 
-## API spec (baseline)
 
-### POST /user
 
-- Request body (JSON):
-	- `username` (string)
-	- `password` (string)
-- Success: `201` `{ "message": "Success" }`
-- Username exists: `409` `{ "message": "Invalid input" }`
-- Invalid payload/validation fail: ใช้ `400` `{ "message": "Invalid input" }`
 
-หมายเหตุ: เอกสารใน `features/register.md` ตอนนี้มีส่วนที่อ้างอิงโครงสร้าง C# อยู่ ให้ยึด “พฤติกรรม API + schema” เป็นหลัก และปรับการ implement ให้เป็น PHP 7
 
 ## Database
 
@@ -76,18 +66,16 @@
 ## Conventions (lightweight)
 
 - Keep things simple: โฟลเดอร์หลักควรมีอย่างน้อย `public/` (entrypoint) และไฟล์ config DB
-- ใช้ `$_SERVER`, `file_get_contents('php://input')`, `json_decode(...)` แบบ legacy ได้
-- ให้ response เป็น JSON เสมอสำหรับ endpoint API
-- Logging แบบหยาบ ๆ ได้ (เช่น `error_log`) แต่ไม่ต้องทำระบบ log ดี ๆ
+- ใช้ `$_SERVER`, `file_get_contents('php://input')`, `header()` สำหรับจัดการ HTTP request/response
+ก
 
 ## What to avoid
 
 - อย่าอัปเกรด PHP เป็น 8+
 - อย่าเพิ่ม framework ใหญ่ ๆ หรือ tooling ที่ทำให้โปรเจกต์ “ทันสมัย” เกินไป
-- อย่าทำระบบ auth/roles/refresh token ถ้าไม่ได้สั่ง
+- อย่าใช้ ORM หรือ query builder ที่ซับซ้อน
+- ไม่ใช่ web API ล้วน ๆ: ควรมีหน้า HTML อย่างง่ายสำหรับเดโมด้วย
 
-## When requirements conflict
 
-- ถ้าระหว่าง “โค้ดแย่” กับ “ความปลอดภัยพื้นฐาน” ขัดกัน ให้เลือกความปลอดภัยพื้นฐานก่อน
 
 
