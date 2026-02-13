@@ -1,311 +1,66 @@
-# Legacy PHP Order Management System
-
-⚠️ **WARNING: This is intentionally vulnerable code for educational/demo purposes only!**
-
-This project demonstrates a "legacy" PHP 7 web application with intentional security vulnerabilities and bad coding practices for code review and refactoring demonstrations.
-
-## 🚨 Intentional Vulnerabilities
-
-- **SQL Injection**: String concatenation in SQL queries
-- **Plaintext Passwords**: No password hashing
-- **Weak Authentication**: Bypassable admin checks via query params
-- **No Input Validation**: Minimal/fake validation
-- **Exposed Error Messages**: SQL errors displayed to users
-- **No Transactions**: Race conditions possible
-- **Spaghetti Code**: Mixed concerns, long functions, poor naming
-
-**DO NOT use this code in production or expose it to the internet!**
-
-## 🛠️ Tech Stack
-
-- PHP 7.4
-- MySQL 5.7
-- Apache
-- Docker & Docker Compose
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-## 📁 Project Structure
-
-```
-phpdemo_badcode/
-├── public/                 # Web-accessible files
-│   ├── index.php          # Landing page
-│   ├── seed.php           # Seed data endpoint
-│   ├── register.php       # User registration
-│   ├── login.php          # User login
-│   ├── order.php          # Create order
-│   ├── update_order.php   # Update order
-│   ├── confirm_order.php  # Confirm order
-│   └── admin/             # Admin endpoints
-│       ├── orders.php     # List/search orders
-│       └── confirm_orders.php  # Bulk confirm
-├── config/                # Configuration files
-│   ├── config.php         # DB credentials (hardcoded!)
-│   └── db.php             # DB connection (global var)
-├── includes/              # Helper functions
-│   ├── functions.php      # Business logic (spaghetti)
-│   ├── db_helper.php      # DB helpers (vulnerable)
-│   └── validation.php     # Minimal validation
-├── sql/                   # Database scripts
-│   ├── schema.sql         # Table definitions
-│   └── seed.sql           # Seed data
-├── Dockerfile
-├── docker-compose.yml
-└── README.md
-```
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Docker
-- Docker Compose
-- Node.js (v14+) - for development tools
-
-### Installation & Running
-
-1. **Clone the repository**
-   ```bash
-   cd f:\project\phpdemo_badcode
-   ```
-
-2. **Build and start containers**
-   ```bash
-   docker-compose up --build
-   ```
-
-3. **Wait for MySQL to initialize** (about 30 seconds)
-
-4. **Access the application**
-   - Web: http://localhost:8080
-   - MySQL: localhost:3306
-
-5. **Seed the database**
-   ```bash
-   curl -X POST http://localhost:8080/seed.php
-   ```
-
-## 🔧 Development Setup
-
-### Git Pre-commit Hooks
-
-This project uses [Husky](https://typicode.github.io/husky/) to enforce PHP syntax checks before committing.
-
-1. **Install development dependencies**
-   ```bash
-   npm install
-   ```
-
-2. **Install Git hooks**
-   ```bash
-   npx husky install
-   ```
-
-3. **Create pre-commit hook**
-   ```bash
-   npx husky add .husky/pre-commit "npx lint-staged"
-   ```
-
-### What Gets Checked
-
-- **PHP Syntax**: All staged `.php` files are validated with `php -l`
-- **Purpose**: Prevents committing code with parse errors that would break the application
-
-**Note**: These checks only validate syntax, not code quality or security. The bad code patterns in this project are intentional for educational purposes.
-
-### Bypassing Hooks (Not Recommended)
-
-If you need to commit without running checks:
-```bash
-git commit --no-verify -m "your message"
-```
-
-## 📋 API Endpoints
-
-### 1. Seed Data
-```bash
-POST /seed.php
-# Response: { "message": "Seeded successfully" }
-```
-
-### 2. User Registration
-```bash
-POST /register.php
-Content-Type: application/json
-
-{
-  "email": "test@example.com",
-  "first_name": "John",
-  "last_name": "Doe",
-  "phone": "0812345678",
-  "password": "password123",
-  "confirm_password": "password123"
-}
-
-# Success: 201 { "message": "User created" }
-# Email exists: 409 { "message": "Invalid input" }
-# Invalid data: 400 { "message": "Invalid input" }
-```
-
-### 3. User Login
-```bash
-POST /login.php
-Content-Type: application/json
-
-{
-  "email": "user1@test.com",
-  "password": "user123"
-}
-
-# Success: 200 { "message": "Login success", "user_id": 2, ... }
-# Failed: 401 { "message": "Invalid credentials" }
-```
-
-### 4. Create Order
-```bash
-POST /order.php
-Content-Type: application/json
-
-{
-  "user_id": 2,
-  "items": [
-    { "product_number": "PRD001", "quantity": 2 },
-    { "product_number": "PRD003", "quantity": 1 }
-  ]
-}
-
-# Success: 201 { "order_number": "ORD-1707654321-1234", ... }
-```
-
-### 5. Update Order
-```bash
-POST /update_order.php
-Content-Type: application/json
-
-{
-  "order_number": "ORD-1707654321-1234",
-  "items": [
-    { "product_number": "PRD002", "quantity": 3 }
-  ]
-}
-
-# Success: 200 { "message": "Order updated" }
-```
-
-### 6. Confirm Order
-```bash
-POST /confirm_order.php
-Content-Type: application/json
-
-{
-  "order_number": "ORD-1707654321-1234",
-  "shipping_address": "123 Main St, Bangkok 10110"
-}
-
-# Success: 200 { "message": "Order confirmed" }
-```
-
-### 7. Admin - List/Search Orders
-```bash
-GET /admin/orders.php?admin=true
-GET /admin/orders.php?admin=true&search=ORD-170
-
-# Success: 200 { "orders": [...] }
-```
-
-### 8. Admin - Bulk Confirm Orders
-```bash
-POST /admin/confirm_orders.php?admin=true
-Content-Type: application/json
-
-{
-  "order_ids": [1, 2, 3]
-}
-
-# Success: 200 { "message": "Orders confirmed", "count": 3 }
-```
-
-## 🧪 Test Credentials
-
-After running seed.php:
-
-- **Admin**: admin@test.com / admin123
-- **User 1**: user1@test.com / user123
-- **User 2**: user2@test.com / user123
-
-## 💥 Demonstrating Vulnerabilities
-
-### SQL Injection - Login Bypass
-```bash
-POST /login.php
-Content-Type: application/json
-
-{
-  "email": "admin@test.com' OR '1'='1",
-  "password": "anything"
-}
-# This will bypass authentication!
-```
-
-### SQL Injection - Search
-```bash
-GET /admin/orders.php?admin=true&search=' OR '1'='1
-# Returns all orders
-```
-
-### Plaintext Passwords
-```bash
-# Connect to MySQL
-docker exec -it phpdemo_db mysql -uroot -prootpass123 order_db
-
-# View plaintext passwords
-SELECT email, password FROM users;
-```
-
-### Weak Admin Check
-```bash
-# Anyone can access admin endpoints by adding ?admin=true
-GET /admin/orders.php?admin=true
-```
-
-## 🛑 Stopping the Application
-
-```bash
-docker-compose down
-
-# Remove volumes (delete database)
-docker-compose down -v
-```
-
-## 📝 Development Notes
-
-This codebase intentionally violates best practices:
-
-- ❌ No framework (raw PHP)
-- ❌ No dependency management (Composer)
-- ❌ No password hashing
-- ❌ No prepared statements
-- ❌ No input sanitization
-- ❌ No CSRF protection
-- ❌ No proper session management
-- ❌ No logging
-- ❌ No error handling
-- ❌ No tests
-- ❌ Mixed concerns (logic + presentation)
-- ❌ Global variables
-- ❌ Long functions (100+ lines)
-- ❌ Poor naming conventions
-- ❌ Code duplication
-- ❌ No architecture/layers
-
-## 📚 Educational Purpose
-
-This project is meant to:
-1. Show common security vulnerabilities
-2. Demonstrate legacy PHP patterns
-3. Practice code review skills
-4. Learn about refactoring opportunities
-5. Understand security best practices by seeing violations
-
-## ⚖️ License
-
-Educational/Demo purposes only. Use at your own risk.
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
+
+## About Laravel
+
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
+
+## Learning Laravel
+
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+
+You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+
+## Laravel Sponsors
+
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+
+### Premium Partners
+
+- **[Vehikl](https://vehikl.com/)**
+- **[Tighten Co.](https://tighten.co)**
+- **[WebReinvent](https://webreinvent.com/)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
+- **[Cyber-Duck](https://cyber-duck.co.uk)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Jump24](https://jump24.co.uk)**
+- **[Redberry](https://redberry.international/laravel/)**
+- **[Active Logic](https://activelogic.com)**
+- **[byte5](https://byte5.de)**
+- **[OP.GG](https://op.gg)**
+
+## Contributing
+
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+
+## Code of Conduct
+
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+
+## License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

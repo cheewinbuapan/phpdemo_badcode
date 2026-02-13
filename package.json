@@ -1,22 +1,21 @@
 {
-  "name": "phpdemo_badcode",
-  "version": "1.0.0",
-  "description": "Legacy PHP demo project with bad code patterns",
-  "private": true,
-  "scripts": {
-    "prepare": "husky install",
-    "lint:php": "node scripts/check-php-syntax.js"
-  },
-  "devDependencies": {
-    "husky": "^8.0.3",
-    "lint-staged": "^15.2.0"
-  },
-  "lint-staged": {
-    "*.php": [
-      "node scripts/check-php-syntax-docker.js"
-    ]
-  },
-  "keywords": ["php", "legacy", "demo"],
-  "author": "",
-  "license": "MIT"
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.4.20",
+        "axios": "^1.7.4",
+        "concurrently": "^9.0.1",
+        "laravel-vite-plugin": "^1.2.0",
+        "postcss": "^8.4.47",
+        "tailwindcss": "^3.4.13",
+        "vite": "^6.0.11"
+    },
+    "dependencies": {
+        "alpinejs": "^3.13.3",
+        "chart.js": "^4.4.0"
+    }
 }

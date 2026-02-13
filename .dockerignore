@@ -1,0 +1,53 @@
+# Docker ignore file for Laravel 11
+# Exclude unnecessary files from Docker build context
+
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Environment files (use docker-compose env vars instead)
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing
+.phpunit.result.cache
+coverage/
+
+# Laravel specific
+storage/logs/*.log
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+!storage/framework/.gitignore
+
+# Documentation (not needed in production image)
+*.md
+!README.md
+docs/
+
+# Docker files (don't copy into container)
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Legacy code (original vulnerable PHP app)
+../phpdemo_badcode/

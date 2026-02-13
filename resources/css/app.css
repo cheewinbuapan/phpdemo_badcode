@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Components Layer */
+@layer components {
+    /* Loading Spinner Animation */
+    .spinner {
+        border: 3px solid rgba(0, 0, 0, 0.1);
+        border-left-color: currentColor;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Smooth Transitions */
+    .transition-smooth {
+        @apply transition-all duration-300 ease-in-out;
+    }
+    
+    /* Button Base Styles */
+    .btn-base {
+        @apply px-6 py-2 rounded-lg font-semibold transition-smooth;
+        @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    }
+    
+    /* Card Base */
+    .card-base {
+        @apply bg-white rounded-lg shadow-md transition-smooth;
+        @apply hover:shadow-lg;
+    }
+    
+    /* Input Base */
+    .input-base {
+        @apply w-full px-4 py-2 border border-gray-300 rounded-lg;
+        @apply focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200;
+        @apply transition-smooth;
+    }
+}
+
+/* Custom Utilities Layer */
+@layer utilities {
+    /* Fade In Animation */
+    .fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Slide In Animation */
+    .slide-in {
+        animation: slideIn 0.3s ease-in-out;
+    }
+    
+    @keyframes slideIn {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(0); }
+    }
+}
