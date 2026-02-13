@@ -156,7 +156,8 @@ function confirmOrderWithAddress($orderNumber, $address) {
     global $conn;
     
     // Update with string concatenation (SQL INJECTION!)
-    $sql = "UPDATE orders SET shipping_address = '$address', status_id = 2 
+    // Keep status as PENDING (status_id = 1)
+    $sql = "UPDATE orders SET shipping_address = '$address' 
             WHERE order_number = '$orderNumber'";
     $result = mysqli_query($conn, $sql);
     
@@ -171,7 +172,9 @@ function confirmOrderWithAddress($orderNumber, $address) {
 function getOrderDetails($orderNumber) {
     global $conn;
     
-    $sql = "SELECT * FROM orders WHERE order_number = '$orderNumber'";
+    $sql = "SELECT o.*, ps.status_name FROM orders o 
+            JOIN product_status ps ON o.status_id = ps.status_id 
+            WHERE o.order_number = '$orderNumber'";
     $result = mysqli_query($conn, $sql);
     if (!$result || mysqli_num_rows($result) == 0) {
         return null;
@@ -180,16 +183,17 @@ function getOrderDetails($orderNumber) {
     $order = mysqli_fetch_assoc($result);
     $oid = $order['order_id'];
     
-    // Get order items
-    $sql = "SELECT * FROM order_details WHERE order_id = $oid";
+    // Get order items with product details
+    $sql = "SELECT od.*, p.product_name FROM order_details od
+            JOIN products p ON od.product_id = p.product_id
+            WHERE od.order_id = $oid";
     $items_result = mysqli_query($conn, $sql);
     $items = array();
     while ($item = mysqli_fetch_assoc($items_result)) {
         $items[] = $item;
     }
     
-    $order['items'] = $items;
-    return $order;
+    return array('order' => $order, 'items' => $items);
 }
 
 // Search orders - VULNERABLE to SQL injection
